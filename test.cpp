@@ -36,12 +36,12 @@ TEST_CASE("MD5 test suit") {
 //  }
 }
 unsigned int makeword(unsigned char b1, unsigned char b2, unsigned char b3, unsigned char b4) {
-  return b1 | b2 << 8 | b3 << 16 | b4 << 24;
+  return ((unsigned int)b1) | (((unsigned int)b2) << 8) |
+    (((unsigned int)b3) << 16) | (((unsigned int)b4) << 24);
 }
 unsigned int leftrotate(unsigned int v, unsigned int amount) {
   return (v << amount) | (v >> (32 - amount));
 }
-#define ADD(x, y) (unsigned int)(min(UINT_MAX, (unsigned long)x + y))
 
 string md5(char* str) {
   vector<unsigned char> msg;
@@ -77,7 +77,7 @@ string md5(char* str) {
   unsigned int d0 = 0x10325476U;   //D
   md5_padding(msg);
   for (int c = 0; c < msg.size(); c += 64) {
-    int M[] = {
+    unsigned int M[] = {
       makeword(msg[c+ 0], msg[c+ 1], msg[c+ 2], msg[c+ 3]),
       makeword(msg[c+ 4], msg[c+ 5], msg[c+ 6], msg[c+ 7]),
       makeword(msg[c+ 8], msg[c+ 9], msg[c+10], msg[c+11]),
@@ -150,20 +150,20 @@ string md5_encode(unsigned int* data, int len) {
 
 
 void md5_append(vector<unsigned char>& msg, unsigned long data){
-  unsigned char b1 = (unsigned char)(data >> 24 & 0xff);
-  unsigned char b2 = (unsigned char)(data >> 16 & 0xff);
-  unsigned char b3 = (unsigned char)(data >> 8  & 0xff);
-  unsigned char b4 = (unsigned char)(data       & 0xff);
-  msg.push_back(b4);
-  msg.push_back(b3);
-  msg.push_back(b2);
-  msg.push_back(b1);
+  unsigned char w1h = (unsigned char)(data >> 24 & 0xff);
+  unsigned char w1l = (unsigned char)(data >> 16 & 0xff);
+  unsigned char w2h = (unsigned char)(data >> 8  & 0xff);
+  unsigned char w2l = (unsigned char)(data       & 0xff);
+  msg.push_back(w2l);
+  msg.push_back(w2h);
+  msg.push_back(w1l);
+  msg.push_back(w1h);
 }
 
 void md5_padding(vector<unsigned char>& msg){
   unsigned long count = msg.size();
   unsigned int bits = count * 8;
-  if (bits == 512) return;
+  if (bits > 512 && bits % 512 == 0) return;
   bits += 8;
   msg.push_back((unsigned char)0x80);
   while (bits % 512 != 448) {
