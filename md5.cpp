@@ -1,5 +1,9 @@
 #include "md5.h"
 
+string md5(const char* msg) {
+  string dummy;
+  return md5(msg, dummy);
+}
 string md5(const char* msg, string& abcd_trace) {
   ostringstream abcd;
   vector<BYTE> bytes;

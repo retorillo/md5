@@ -14,6 +14,7 @@ using namespace std;
   (((WORD)b3) << 16) | (((WORD)b4) << 24))
 #define ROTATE_LEFT(x, n) ((x << n) | (x >> (32 - n)))
 
+string md5(const char* str);
 string md5(const char* str, string& abcd_trace);
 string printword(WORD*, int);
 void md5_padding(vector<BYTE>&);
