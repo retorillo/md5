@@ -16,6 +16,11 @@ int main(int argc, const char** argv) {
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
   };
-  for(int c = 0; c < 7; c++)
-    cout << padding(samples[c]) << endl;
+  for(int c = 0; c < 7; c++) {
+    cout << samples[c] << endl;
+    string abcd_trace;
+    cout << "md5 hash:" << md5(samples[c], abcd_trace) << endl;
+    cout << "ABCD traces:" << endl << abcd_trace;
+    cout << "padded bytes: " << padding(samples[c]) << endl;
+  }
 }

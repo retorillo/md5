@@ -1,6 +1,7 @@
 #include "md5.h"
 
-string md5(const char* msg) {
+string md5(const char* msg, string& abcd_trace) {
+  ostringstream abcd;
   vector<BYTE> bytes;
   const WORD s[] = {
      7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
@@ -28,14 +29,11 @@ string md5(const char* msg) {
     };
   for(int c = 0; c < strlen(msg); c++)
     bytes.push_back((BYTE)msg[c]);
-
   WORD a0 = 0x67452301U;
   WORD b0 = 0xefcdab89U;
   WORD c0 = 0x98badcfeU;
   WORD d0 = 0x10325476U;
-
   md5_padding(bytes);
-
   for (int c = 0; c < bytes.size(); c += 64) {
     WORD M[] = {
       MAKE_WORD(bytes[c+ 0], bytes[c+ 1], bytes[c+ 2], bytes[c+ 3]),
@@ -82,12 +80,15 @@ string md5(const char* msg) {
       C = B;
       B += ROTATE_LEFT((A + F + K[i] + M[g]), s[i]);
       A = tempD;
+      abcd << "['" << printword(&A, 1) << "','" << printword(&B, 1) << "','" 
+        << printword(&C, 1) << "','" << printword(&D, 1) << "']" << endl;
     }
     a0 += A;
     b0 += B;
     c0 += C;
     d0 += D;
   }
+  abcd_trace = abcd.str();
   WORD hash[] = { a0, b0, c0, d0 };
   return printword(hash, 4);
 }
